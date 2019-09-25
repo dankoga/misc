@@ -1,6 +1,10 @@
 function amazon_fires()
+% Data for Jun 1998 to Sep 2019 retrieved from:
 % http://queimadas.dgi.inpe.br/queimadas/portal-static/estatisticas_estados_light/grafico_historico_estado_amazonia_legal_titulo.html
-% retrieved in 23/9/2019
+% in 23/9/2019.
+% Data format:
+% Columns: Months; Rows: Years; Null values: No Data.
+
 
 FiresHistory = [...
      0      0      0      0       0   2620   5706  29683  29627  13160   4178   2640
@@ -47,7 +51,7 @@ FiresMonthlyMin(9) = min(FiresMonth);
 FiresMonthlyAvg(9) = mean(FiresMonth);
 FiresMonthlySD(9)  = std(FiresMonth);
 
-% Creating color map. 1st index is black.
+% Creating color map. 1st index (null values) is black.
 ColorMap = [0.0, 0.0, 0.0;
             ones(max(FiresHistory(:)), 3)];
 ColorMap(2:end, 2) = linspace(0, 1, max(FiresHistory(:)));
@@ -79,8 +83,8 @@ ha1 = axes(hf, ...
            'YLim', [0.5, 22.5], ...
            'YTick', (1:22), ...
            'YTickLabel', (1998:2019));
-% Plotting image.
-image(ha1, FiresHistory, 'CDatamapping', 'scaled');
+% Plotting image. Values will be offsetted by 1 to match colormap indexes.
+image(ha1, FiresHistory+1);
 colorbar();
 
 % Creating graph axis.
@@ -103,9 +107,9 @@ fill(ha2, [(1:12)'; (12:-1:1)'], [FiresMonthlyAvg-FiresMonthlySD; flip(FiresMont
 % Plotting average.
 plot(ha2, (1:12)', FiresMonthlyAvg,'-k', 'LineWidth', 1);
 % Plotting current year's data.
-plot(ha2, (1:8)', FiresHistory(end,1:8), '-sk', 'LineWidth', 2);
+plot(ha2, (1:8)', FiresHistory(end,1:8), '-sk', 'LineWidth', 2, 'MarkerFaceColor', 'k');
 plot(ha2, (8:9)', FiresHistory(end,8:9), '--sk', 'LineWidth', 2);
 % Plotting simple prediction.
 plot(ha2, (1:12)', C(1)*FiresMonthlyAvg + C(2), '--b', 'LineWidth', 2);
-legend('Extremes', '±1 Std. Deviation', 'Average', '01/2019 to 08/2019 Data', '09/2019 Data (Incomplete)', 'Simple Prediction', ...
+legend('Extremes', 'Â±1 Std. Deviation', 'Average', '01/2019 to 08/2019 Data', '09/2019 Data (Incomplete)', 'Simple Prediction', ...
        'Location', 'NorthWest');
